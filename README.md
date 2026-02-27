@@ -13,3 +13,8 @@ Projeto de automação para avaliação QA na Outsera.
 ```bash
 npm install
 npx playwright install --with-deps
+```
+
+## Comandos principais
+- Rodar testes API: `npx playwright test tests/api`
+- Ver relatório: `npx playwright show-report reports/playwright-report`
