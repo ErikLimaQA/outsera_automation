@@ -3,7 +3,7 @@ import { check, sleep, group } from 'k6';
 import { Counter } from 'k6/metrics';
 
 // Import do bundle do reporter
-import { htmlReport } from 'https://raw.githubusercontent.com/benc-uk/k6-reporter/v2.4.0/dist/bundle.js';
+import { htmlReport } from 'https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js';
 
 // Resumo colorido no console
 import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.3/index.js';
