@@ -2,8 +2,8 @@ import http from 'k6/http';
 import { check, sleep, group } from 'k6';
 import { Counter } from 'k6/metrics';
 
-// Import do bundle do reporter
-import { htmlReport } from 'https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js';
+// Import LOCAL do bundle (baixado manualmente)
+import { htmlReport } from './reporter/k6-reporter-bundle.js';
 
 // Resumo colorido no console
 import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.3/index.js';
@@ -23,19 +23,18 @@ const ciStages = [
 ];
 
 const fullStages = [
-  { duration: '30s', target: 50 },    // ramp-up suave
-  { duration: '5m',  target: 500 },   // 500 VUs por 5 minutos (tarefa principal)
-  { duration: '30s', target: 0 },     // ramp-down
+  { duration: '30s', target: 50 },
+  { duration: '5m',  target: 500 },
+  { duration: '30s', target: 0 },
 ];
 
 export const options = {
   stages: isCI ? ciStages : fullStages,
   thresholds: {
-    http_req_duration: ['p(95)<500'],          // global: 95% < 500 ms
-    http_req_failed:   ['rate<0.01'],          // falhas < 1%
-    checks:            ['rate>0.98'],          // checks > 98% (ajustado para GETs mais estáveis)
+    http_req_duration: ['p(95)<500'],
+    http_req_failed:   ['rate<0.01'],
+    checks:            ['rate>0.98'],
 
-    // Thresholds por grupo (mais específicos e úteis na análise)
     'group_duration{group:::GET posts - Listagem}':          ['p(95)<300'],
     'group_duration{group:::GET posts - Item aleatório}':    ['p(95)<350'],
     'group_duration{group:::GET inválido - Simulação 404}':  ['p(95)<400'],
@@ -43,7 +42,7 @@ export const options = {
 };
 
 export default function () {
-  // 1. Listagem completa (GET /posts) – endpoint mais pesado
+  // 1. Listagem completa
   group('GET posts - Listagem', () => {
     const res = http.get('https://jsonplaceholder.typicode.com/posts');
 
@@ -57,7 +56,7 @@ export default function () {
     else failureCounter.add(1);
   });
 
-  // 2. Busca por item individual (ID aleatório entre 1 e 100)
+  // 2. Item aleatório
   group('GET posts - Item aleatório', () => {
     const postId = Math.floor(Math.random() * 100) + 1;
     const res = http.get(`https://jsonplaceholder.typicode.com/posts/${postId}`);
@@ -73,7 +72,7 @@ export default function () {
     else failureCounter.add(1);
   });
 
-  // 3. Simulação de erro 404 (GET inexistente)
+  // 3. Simulação 404
   group('GET inválido - Simulação 404', () => {
     const res = http.get('https://jsonplaceholder.typicode.com/posts/999999');
 
@@ -81,10 +80,10 @@ export default function () {
       'status is 404':                 (r) => r.status === 404,
       'response time < 400ms mesmo em erro': (r) => r.timings.duration < 400,
     });
-    // Não contamos como success/failure aqui, pois é erro esperado
+    // Não conta como success/failure (erro esperado)
   });
 
-  sleep(1); // think time realista entre iterações
+  sleep(1);
 }
 
 export function handleSummary(data) {
