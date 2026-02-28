@@ -12,7 +12,7 @@ Inclui testes de API, E2E (BDD com Cucumber), performance (K6) e mobile (Maestro
 - **GitHub Actions** → Pipeline de CI/CD automatizado
 
 Status do Pipeline:  
-[![QA Pipeline](https://github.com/ErikLimaQA/outsera_automation/actions/workflows/ci-qa.yml/badge.svg)](https://github.com/ErikLimaQA/outsera_automation/actions/workflows/ci-qa.yml)
+[![QA Pipeline](https://github.com/ErikLimaQA/outsera_automation/workflows/QA%20Pipeline%20-%20Outsera%20Automa%C3%A7%C3%A3o/badge.svg)](https://github.com/ErikLimaQA/outsera_automation/actions/workflows/ci-qa.yml)
 
 ## Instalação
 
@@ -39,12 +39,10 @@ maestro --version
 ```
 
 ## Comandos principais (Playwright)
-
 # Executar testes de API
 ```bash
 npx playwright test tests/api
 ```
-
 # Executar testes E2E (Cucumber + Playwright)
 ```bash
 npx cucumber-js features/ --require cucumber.config.js   # ajuste se pasta/config diferente
