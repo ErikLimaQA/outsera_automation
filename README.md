@@ -29,7 +29,7 @@ npx playwright install --with-deps
 # Instalar K6 (macOS/Linux recomendado via brew ou curl)
 ```bash
 brew install k6   # ou veja https://k6.io/docs/getting-started/installation/
-k6 version        # deve mostrar v0.52.0 ou superior
+k6 version
 ```
 
 # Maestro (para mobile)
@@ -38,11 +38,19 @@ curl -Ls "https://get.maestro.mobile.dev" | bash
 maestro --version
 ```
 
-## Comandos principais (Playwright)
-# Executar testes de API
-```bash
-npx playwright test tests/api
-```
+## Testes Automatizados de API (Playwright)
+
+- API utilizada: JSONPlaceholder (https://jsonplaceholder.typicode.com/posts) – mock simples e gratuito
+- Métodos cobertos: GET, POST, PUT, DELETE
+- Cenários:
+   - Positivos: Entradas válidas, listagem, criação, atualização, remoção
+   - Negativos: Recurso inexistente (404), payload inválido (aceita ou 500), atualização/remoção inexistente
+- Validações: Status codes, Content-Type header, corpo da resposta
+- Relatório: HTML gerado automaticamente (artifact `playwright-api-report` no CI)
+
+**Comando local**: `npx playwright test tests/api --project=api`  
+**Observação**: Alguns cenários negativos retornam 500 devido a limitações do mock (não persistência real de dados).
+
 # Executar testes E2E (Cucumber + Playwright)
 ```bash
 npx cucumber-js features/ --require cucumber.config.js   # ajuste se pasta/config diferente
