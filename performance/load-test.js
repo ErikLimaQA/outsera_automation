@@ -2,8 +2,8 @@ import http from 'k6/http';
 import { check, sleep, group } from 'k6';
 import { Counter } from 'k6/metrics';
 
-// Import local do bundle do reporter (mantido como no seu original)
-import { htmlReport } from './reporter/k6-reporter-bundle.js';
+// Import do bundle do reporter
+import { htmlReport } from 'https://raw.githubusercontent.com/benc-uk/k6-reporter/v2.4.0/dist/bundle.js';
 
 // Resumo colorido no console
 import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.3/index.js';
