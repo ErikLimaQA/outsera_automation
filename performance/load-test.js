@@ -2,9 +2,6 @@ import http from 'k6/http';
 import { check, sleep, group } from 'k6';
 import { Counter } from 'k6/metrics';
 
-// Import LOCAL do bundle (baixado manualmente)
-import { htmlReport } from './reporter/k6-reporter-bundle.js';
-
 // Resumo colorido no console
 import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.3/index.js';
 
@@ -12,10 +9,10 @@ import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.3/index.js';
 const successCounter = new Counter('requests_successful');
 const failureCounter = new Counter('requests_failed');
 
-// Detecta se está rodando no CI (GitHub Actions define CI=true)
+// Detecta CI para stages rápidos
 const isCI = __ENV.CI === 'true';
 
-// Ajusta stages dinamicamente: rápido no CI, completo local
+// Stages: rápido no CI, completo local
 const ciStages = [
   { duration: '10s', target: 20 },
   { duration: '40s', target: 50 },
@@ -42,7 +39,6 @@ export const options = {
 };
 
 export default function () {
-  // 1. Listagem completa
   group('GET posts - Listagem', () => {
     const res = http.get('https://jsonplaceholder.typicode.com/posts');
 
@@ -56,7 +52,6 @@ export default function () {
     else failureCounter.add(1);
   });
 
-  // 2. Item aleatório
   group('GET posts - Item aleatório', () => {
     const postId = Math.floor(Math.random() * 100) + 1;
     const res = http.get(`https://jsonplaceholder.typicode.com/posts/${postId}`);
@@ -72,7 +67,6 @@ export default function () {
     else failureCounter.add(1);
   });
 
-  // 3. Simulação 404
   group('GET inválido - Simulação 404', () => {
     const res = http.get('https://jsonplaceholder.typicode.com/posts/999999');
 
@@ -80,7 +74,6 @@ export default function () {
       'status is 404':                 (r) => r.status === 404,
       'response time < 400ms mesmo em erro': (r) => r.timings.duration < 400,
     });
-    // Não conta como success/failure (erro esperado)
   });
 
   sleep(1);
@@ -88,8 +81,15 @@ export default function () {
 
 export function handleSummary(data) {
   return {
-    'reports/k6-load-report.html': htmlReport(data, { debug: false }),
+    // Relatório HTML nativo do k6 (built-in, sem dependências externas)
+    'reports/k6-load-report.html': require('k6/html').htmlReport(data, {
+      title: 'Outsera Load Test - Apenas GETs (500 VUs / 5min)'
+    }),
+
+    // JSON raw para análise posterior
     'reports/k6-raw-results.json': JSON.stringify(data, null, 2),
+
+    // Resumo colorido no terminal
     'stdout': textSummary(data, { indent: '→', enableColors: true }),
   };
 }
