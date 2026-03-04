@@ -1,34 +1,24 @@
-# Dependências e pacotes
+cat > .gitignore << 'EOF'
+# Dependências
 node_modules/
-npm-debug.log
-yarn-error.log
 
-# Relatórios e resultados gerados por testes (Playwright, K6, Cucumber)
+# Relatórios e resultados
 reports/
 test-results/
 playwright-report/
-cucumber-report.html
-cucumber-report.json
-k6-load-report.html
-k6-raw-results.json
+cucumber-report.*
+k6-*.html
+k6-*.json
 
-# Configs de IDE / editor (IntelliJ, VS Code, etc.)
+# IDE / editor
 .idea/
 *.iml
 .vscode/
-*.sublime-project
-*.sublime-workspace
 
-# Arquivos do sistema operacional
+# Sistema operacional
 .DS_Store
 Thumbs.db
 
-# Arquivos temporários / logs
+# Temporários / logs
 *.log
 *.tmp
-*.bak
-*.swp
-
-# Arquivos do K6 (se baixou bundle local e não usa mais)
-performance/reporter/
-k6-reporter-bundle.js
