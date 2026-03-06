@@ -3,6 +3,9 @@
 Projeto de automação para avaliação QA na Outsera.  
 Foco em testes de API (Playwright) e performance (K6), com pipeline CI/CD completo no GitHub Actions.
 
+## Acesso ao Projeto
+Repositório público para avaliação: https://github.com/ErikLimaQA/outsera_automation
+
 ## Tecnologias utilizadas
 
 - **Playwright (JavaScript)** → Testes de API + E2E

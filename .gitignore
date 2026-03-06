@@ -22,3 +22,6 @@ Thumbs.db
 # Temporários / logs
 *.log
 *.tmp
+
+jsconfig.json
+tsconfig.json
