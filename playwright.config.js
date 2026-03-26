@@ -1,45 +1,31 @@
-// @ts-check
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig } from '@playwright/test';
+import dotenv from 'dotenv';
+import fs from 'node:fs';
+
+// Caso tenha DOTENV_PATH definido, usamos ele.
+// Caso contrário, carregamos .env normal.
+const dotenvPath = process.env.DOTENV_PATH || '.env';
+
+if (fs.existsSync(dotenvPath)) {
+  dotenv.config({ path: dotenvPath, override: true });
+} else {
+  console.warn(`⚠️ Arquivo ${dotenvPath} não encontrado. Falha ao carregar env.`);
+}
 
 export default defineConfig({
-  testDir: './tests',
+  reporter: [['html', { outputFolder: 'playwright-report', open: 'never' }]],
   timeout: 30000,
-  expect: { timeout: 5000 },
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
-
-  reporter: [
-    ['html', {
-      outputFolder: 'reports/playwright-report',
-      open: 'never',
-      includeStdio: true,
-    }],
-  ],
-
-  use: {
-    baseURL: 'https://jsonplaceholder.typicode.com',
-    extraHTTPHeaders: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-    },
-    trace: 'on-first-retry',
-    screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
-  },
 
   projects: [
     {
-      name: 'api',
-      testMatch: /.*\.api\.spec\.(js|ts)/,
+      name: `api-${process.env.ENV || 'dev'}`,
+      testDir: 'tests/api',
       use: {
-        ...devices['Desktop Chrome'],
-        headless: true,
-      },
-    },
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
-  ],
+        baseURL: process.env.API_BASEURL,
+        extraHTTPHeaders: {
+          'Content-Type': 'application/json; charset=utf-8'
+        }
+      }
+    }
+  ]
 });

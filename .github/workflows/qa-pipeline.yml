@@ -11,7 +11,18 @@ jobs:
   # 1) API tests (Playwright Test)
   # ----------------------------
   playwright-api-testing:
+    name: API (${{ matrix.env }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - env: dev
+            dotenv_path: .env.dev
+          - env: qa
+            dotenv_path: .env.qa
+          - env: prd
+            dotenv_path: .env.prd
     steps:
       - uses: actions/checkout@v4
 
@@ -23,22 +34,22 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
-
-      # Garante que o HTML report vá para "reports/playwright-report/"
-      - name: Run API tests
+      - name: Run API tests (${{ matrix.env }})
         env:
-          PLAYWRIGHT_HTML_REPORT: reports/playwright-report
-        run: npx playwright test --project=api --reporter=html
+          ENV: ${{ matrix.env }}
+          DOTENV_PATH: ${{ matrix.dotenv_path }}
+          # Define explicitamente a pasta do report do Playwright
+          PLAYWRIGHT_HTML_REPORT: playwright-report
+        run: |
+          npx playwright test tests/api --project=api-${{ matrix.env }} --reporter=html
 
-      - name: Upload Playwright API report
+      - name: Upload Playwright API report (${{ matrix.env }})
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-api-report
-          path: reports/playwright-report/
-          retention-days: 30
+          name: playwright-api-report-${{ matrix.env }}
+          path: playwright-report/
+          retention-days: 14
 
   # -------------------------------------------
   # 2) E2E Web (Cucumber + Playwright core)
